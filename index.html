@@ -1,0 +1,86 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+  <meta name="theme-color" content="#ffaf9e" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%23f1889b'/%3E%3Ctext x='32' y='43' text-anchor='middle' font-family='sans-serif' font-size='31' font-weight='700' fill='white'%3ENC%3C/text%3E%3C/svg%3E" />
+  <title>Neon Coast Drive — Anime City Cruise</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="./style.css" />
+  <script type="importmap">
+    {"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.169.0/build/three.module.js"}}
+  </script>
+</head>
+<body>
+  <main id="game-shell">
+    <canvas id="game-canvas" aria-label="Three dimensional anime city driving game"></canvas>
+    <div class="sun-glow" aria-hidden="true"></div>
+
+    <header class="topbar">
+      <a class="brand" href="#" aria-label="Neon Coast Drive home">
+        <span class="brand-mark">NC<span>✦</span></span>
+        <span class="brand-name">NEON COAST <i>DRIVE</i></span>
+      </a>
+      <div class="top-center"><span class="live-dot"></span><span id="route-label">ROUTE 09 · SAKURA BAY</span></div>
+      <div class="top-actions">
+        <button class="icon-button" id="sound-button" aria-label="Toggle sound" title="Toggle sound">♫</button>
+        <button class="icon-button" id="pause-button" aria-label="Pause game" title="Pause">Ⅱ</button>
+      </div>
+    </header>
+
+    <section class="hud-left" aria-label="Drive stats">
+      <div class="speed-card glass-card">
+        <div class="card-label"><span class="tiny-diamond">◆</span> YOUR PACE</div>
+        <div class="speed-readout"><span id="speed-value">72</span><small>KM/H</small></div>
+        <div class="speed-track"><span id="speed-fill"></span></div>
+        <div class="speed-foot"><span>CRUISE</span><span id="gear-value">D · 3</span></div>
+      </div>
+      <div class="distance-card glass-card">
+        <div class="metric-icon">↗</div><div><span class="card-label">DISTANCE</span><strong><span id="distance-value">0.0</span><small> km</small></strong></div>
+      </div>
+      <div class="distance-card score-card glass-card">
+        <div class="metric-icon star-icon">✦</div><div><span class="card-label">SUNSET POINTS</span><strong id="score-value">0000</strong></div>
+      </div>
+    </section>
+
+    <section class="hud-right">
+      <div class="traffic-card glass-card">
+        <div class="traffic-heading"><span class="card-label">ROAD FLOW</span><span id="flow-status" class="flow-status">MOVING</span></div>
+        <div class="traffic-meter"><span id="traffic-fill"></span><i></i><i></i><i></i><i></i><i></i></div>
+        <div class="traffic-caption"><span>OPEN ROAD</span><span>JAM AHEAD</span></div>
+      </div>
+      <div class="mini-map glass-card">
+        <div class="map-label">YOUR ROUTE <span>↗</span></div>
+        <div class="map-visual">
+          <div class="map-road"><i></i><i></i><i></i><i></i></div>
+          <span class="map-player"></span><span class="map-car map-car-a"></span><span class="map-car map-car-b"></span><span class="map-pin">✦</span>
+        </div>
+        <div class="map-footer"><span><b>●</b> YOU</span><span id="map-traffic">18 CARS</span></div>
+      </div>
+    </section>
+
+    <div class="location-pill"><span class="location-icon">⌖</span><span id="location-name">SAKURA BAY</span><span class="location-divider"></span><span id="time-label">SUNSET · 18:42</span></div>
+
+    <div class="mission-card glass-card"><div class="mission-star">✦</div><div><b>TAKE THE SCENIC ROUTE</b><span>Stay smooth. Soak it in.</span></div><div class="mission-check">✓</div></div>
+
+    <div id="toast" class="toast" aria-live="polite"></div>
+    <div id="pause-overlay" class="pause-overlay hidden"><div class="pause-panel glass-card"><div class="pause-kicker">PULL OVER A MOMENT</div><h1>Take in the view.</h1><p>Your sunset cruise is waiting.</p><button id="resume-button" class="primary-button">BACK TO THE ROAD <span>→</span></button></div></div>
+
+    <div class="controls-hint"><span class="keycap">A</span><span class="keycap">D</span><span>STEER</span><span class="hint-divider">·</span><span class="keycap">W</span><span class="keycap">S</span><span>SPEED</span></div>
+
+    <div class="drive-controls" aria-label="Touch driving controls">
+      <div class="steer-pad"><button class="touch-button steer-button" data-control="left" aria-label="Steer left">‹</button><button class="touch-button steer-button" data-control="right" aria-label="Steer right">›</button></div>
+      <div class="pedal-pad"><button class="touch-button brake-button" data-control="brake"><span>−</span><small>BRAKE</small></button><button class="touch-button gas-button" data-control="gas"><span>＋</span><small>GO</small></button></div>
+    </div>
+
+    <button class="autopilot-toggle" id="autopilot-button"><span class="auto-icon">✧</span><span><b>AI DRIVE</b><small id="autopilot-label">OFF · MANUAL</small></span><i class="toggle-track"><i></i></i></button>
+    <button class="camera-button" id="camera-button" title="Change camera view"><span>◉</span><small>CAM</small></button>
+
+    <footer class="bottom-note"><span class="note-sparkle">✦</span> GOLDEN HOUR IN SAKURA BAY <span class="note-line"></span> <span>NO RUSH, JUST DRIVE</span></footer>
+  </main>
+  <script type="module" src="./game.js"></script>
+</body>
+</html>
